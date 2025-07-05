@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoEditor Pro - Standalone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 4rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-area.drag-over {
+            border-color: #667eea;
+            background: #e8f0fe;
+            transform: scale(1.02);
+        }
+
+        .upload-content i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .upload-content p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .editor-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            min-height: 600px;
+        }
+
+        .canvas-container {
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        #canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .controls-panel {
+            background: white;
+            padding: 2rem;
+            border-left: 1px solid #eee;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .controls-header h3 {
+            font-size: 1.3rem;
+            color: #333;
+        }
+
+        .reset-btn {
+            background: #f1f3f4;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .reset-btn:hover {
+            background: #e8eaed;
+            color: #333;
+        }
+
+        .filter-buttons {
+            display: grid;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .filter-btn:hover {
+            background: #e8f0fe;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .filter-btn i {
+            font-size: 1.2rem;
+        }
+
+        .adjustment-controls {
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .action-buttons {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaed;
+            color: #333;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 2rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+            
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-panel {
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
+            
+            .canvas-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-camera"></i> PhotoEditor Pro</h1>
+            <p>Upload and edit your photos with professional filters</p>
+        </header>
+
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Drag & Drop your photo here</h3>
+                    <p>or click to browse</p>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-section" id="editorSection" style="display: none;">
+            <div class="editor-container">
+                <div class="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+                
+                <div class="controls-panel">
+                    <div class="controls-header">
+                        <h3><i class="fas fa-magic"></i> Edit Options</h3>
+                        <button class="reset-btn" id="resetBtn">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="original">
+                            <i class="fas fa-image"></i>
+                            <span>Original</span>
+                        </button>
+                        <button class="filter-btn" data-filter="blackwhite">
+                            <i class="fas fa-adjust"></i>
+                            <span>Black & White</span>
+                        </button>
+                        <button class="filter-btn" data-filter="chromatic">
+                            <i class="fas fa-palette"></i>
+                            <span>Chromatic</span>
+                        </button>
+                        <button class="filter-btn" data-filter="paint">
+                            <i class="fas fa-paint-brush"></i>
+                            <span>Paint</span>
+                        </button>
+                        <button class="filter-btn" data-filter="enhanced">
+                            <i class="fas fa-gem"></i>
+                            <span>Enhanced</span>
+                        </button>
+                    </div>
+
+                    <div class="adjustment-controls">
+                        <div class="control-group">
+                            <label for="brightness">Brightness</label>
+                            <input type="range" id="brightness" min="-100" max="100" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label for="contrast">Contrast</label>
+                            <input type="range" id="contrast" min="-100" max="100" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label for="saturation">Saturation</label>
+                            <input type="range" id="saturation" min="-100" max="100" value="0">
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-secondary" id="newPhotoBtn">
+                            <i class="fas fa-plus"></i> New Photo
+                        </button>
+                        <button class="btn-primary" id="downloadBtn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PhotoEditor {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.originalImageData = null;
+                this.currentImageData = null;
+                this.originalImage = null;
+                this.currentFilter = 'original';
+                this.adjustments = {
+                    brightness: 0,
+                    contrast: 0,
+                    saturation: 0
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.setupDragAndDrop();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    this.handleFileSelect(e.target.files[0]);
+                });
+                
+                document.getElementById('uploadArea').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+                
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.selectFilter(e.currentTarget.dataset.filter);
+                    });
+                });
+                
+                document.getElementById('brightness').addEventListener('input', (e) => {
+                    this.adjustments.brightness = parseInt(e.target.value);
+                    this.applyCurrentFilter();
+                });
+                
+                document.getElementById('contrast').addEventListener('input', (e) => {
+                    this.adjustments.contrast = parseInt(e.target.value);
+                    this.applyCurrentFilter();
+                });
+                
+                document.getElementById('saturation').addEventListener('input', (e) => {
+                    this.adjustments.saturation = parseInt(e.target.value);
+                    this.applyCurrentFilter();
+                });
+                
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetAdjustments();
+                });
+                
+                document.getElementById('newPhotoBtn').addEventListener('click', () => {
+                    this.startNewPhoto();
+                });
+                
+                document.getElementById('downloadBtn').addEventListener('click', () => {
+                    this.downloadImage();
+                });
+            }
+            
+            setupDragAndDrop() {
+                const uploadArea = document.getElementById('uploadArea');
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('drag-over');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('drag-over');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('drag-over');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleFileSelect(files[0]);
+                    }
+                });
+            }
+            
+            handleFileSelect(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    this.showNotification('Please select a valid image file', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.loadImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            loadImage(src) {
+                const img = new Image();
+                img.onload = () => {
+                    this.originalImage = img;
+                    this.setupCanvas(img);
+                    this.showEditor();
+                    this.showNotification('Image loaded successfully!');
+                };
+                img.src = src;
+            }
+            
+            setupCanvas(img) {
+                const maxWidth = 800;
+                const maxHeight = 600;
+                
+                let { width, height } = img;
+                
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width *= ratio;
+                    height *= ratio;
+                }
+                
+                this.canvas.width = width;
+                this.canvas.height = height;
+                this.ctx.drawImage(img, 0, 0, width, height);
+                this.originalImageData = this.ctx.getImageData(0, 0, width, height);
+                this.currentImageData = this.ctx.getImageData(0, 0, width, height);
+            }
+            
+            showEditor() {
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('editorSection').style.display = 'block';
+            }
+            
+            selectFilter(filter) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                
+                this.currentFilter = filter;
+                this.applyCurrentFilter();
+            }
+            
+            applyCurrentFilter() {
+                this.currentImageData = new ImageData(
+                    new Uint8ClampedArray(this.originalImageData.data),
+                    this.originalImageData.width,
+                    this.originalImageData.height
+                );
+                
+                switch (this.currentFilter) {
+                    case 'blackwhite':
+                        this.applyBlackWhiteFilter();
+                        break;
+                    case 'chromatic':
+                        this.applyChromaticFilter();
+                        break;
+                    case 'paint':
+                        this.applyPaintFilter();
+                        break;
+                    case 'enhanced':
+                        this.applyEnhancedFilter();
+                        break;
+                }
+                
+                this.applyAdjustments();
+                this.ctx.putImageData(this.currentImageData, 0, 0);
+            }
+            
+            applyBlackWhiteFilter() {
+                const data = this.currentImageData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    
+                    data[i] = gray;
+                    data[i + 1] = gray;
+                    data[i + 2] = gray;
+                }
+            }
+            
+            applyChromaticFilter() {
+                const data = this.currentImageData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = Math.min(255, data[i] * 1.2);
+                    data[i + 1] = Math.min(255, data[i + 1] * 1.1);
+                    data[i + 2] = Math.min(255, data[i + 2] * 1.3);
+                }
+            }
+            
+            applyPaintFilter() {
+                const data = this.currentImageData.data;
+                const width = this.currentImageData.width;
+                const height = this.currentImageData.height;
+                const originalData = new Uint8ClampedArray(data);
+                
+                for (let y = 1; y < height - 1; y++) {
+                    for (let x = 1; x < width - 1; x++) {
+                        const i = (y * width + x) * 4;
+                        const neighbors = [
+                            (y - 1) * width + x,
+                            (y + 1) * width + x,
+                            y * width + (x - 1),
+                            y * width + (x + 1)
+                        ];
+                        
+                        let avgR = 0, avgG = 0, avgB = 0;
+                        for (const n of neighbors) {
+                            const ni = n * 4;
+                            avgR += originalData[ni];
+                            avgG += originalData[ni + 1];
+                            avgB += originalData[ni + 2];
+                        }
+                        
+                        avgR /= neighbors.length;
+                        avgG /= neighbors.length;
+                        avgB /= neighbors.length;
+                        
+                        data[i] = (data[i] + avgR) / 2;
+                        data[i + 1] = (data[i + 1] + avgG) / 2;
+                        data[i + 2] = (data[i + 2] + avgB) / 2;
+                    }
+                }
+            }
+            
+            applyEnhancedFilter() {
+                const data = this.currentImageData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i];
+                    let g = data[i + 1];
+                    let b = data[i + 2];
+                    
+                    r = ((r / 255 - 0.5) * 1.5 + 0.5) * 255;
+                    g = ((g / 255 - 0.5) * 1.5 + 0.5) * 255;
+                    b = ((b / 255 - 0.5) * 1.5 + 0.5) * 255;
+                    
+                    data[i] = Math.max(0, Math.min(255, r));
+                    data[i + 1] = Math.max(0, Math.min(255, g));
+                    data[i + 2] = Math.max(0, Math.min(255, b));
+                }
+            }
+            
+            applyAdjustments() {
+                const data = this.currentImageData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i];
+                    let g = data[i + 1];
+                    let b = data[i + 2];
+                    
+                    r += this.adjustments.brightness * 2.55;
+                    g += this.adjustments.brightness * 2.55;
+                    b += this.adjustments.brightness * 2.55;
+                    
+                    const contrast = (this.adjustments.contrast + 100) / 100;
+                    r = ((r / 255 - 0.5) * contrast + 0.5) * 255;
+                    g = ((g / 255 - 0.5) * contrast + 0.5) * 255;
+                    b = ((b / 255 - 0.5) * contrast + 0.5) * 255;
+                    
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    const saturation = (this.adjustments.saturation + 100) / 100;
+                    r = gray + (r - gray) * saturation;
+                    g = gray + (g - gray) * saturation;
+                    b = gray + (b - gray) * saturation;
+                    
+                    data[i] = Math.max(0, Math.min(255, r));
+                    data[i + 1] = Math.max(0, Math.min(255, g));
+                    data[i + 2] = Math.max(0, Math.min(255, b));
+                }
+            }
+            
+            resetAdjustments() {
+                this.adjustments = { brightness: 0, contrast: 0, saturation: 0 };
+                document.getElementById('brightness').value = 0;
+                document.getElementById('contrast').value = 0;
+                document.getElementById('saturation').value = 0;
+                this.applyCurrentFilter();
+                this.showNotification('Adjustments reset');
+            }
+            
+            startNewPhoto() {
+                document.getElementById('uploadSection').style.display = 'block';
+                document.getElementById('editorSection').style.display = 'none';
+                this.originalImageData = null;
+                this.currentImageData = null;
+                this.originalImage = null;
+                this.currentFilter = 'original';
+                this.resetAdjustments();
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-filter="original"]').classList.add('active');
+            }
+            
+            downloadImage() {
+                const link = document.createElement('a');
+                link.download = `edited-photo-${Date.now()}.png`;
+                link.href = this.canvas.toDataURL();
+                link.click();
+                this.showNotification('Image downloaded successfully!');
+            }
+            
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new PhotoEditor();
+        });
+    </script>
+</body>
+</html>

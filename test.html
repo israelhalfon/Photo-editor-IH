@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PhotoEditor Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .test-box { 
+            background: white; 
+            color: #333; 
+            padding: 30px; 
+            border-radius: 15px; 
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        button { 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin: 10px;
+        }
+        canvas { 
+            border: 2px solid #ddd; 
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🎯 PhotoEditor Test</h1>
+        <p>If you can see this page, your browser works!</p>
+        
+        <button onclick="testCanvas()">Test Canvas</button>
+        <button onclick="testFileAPI()">Test File Upload</button>
+        
+        <div id="result"></div>
+        <canvas id="testCanvas" width="200" height="100"></canvas>
+        
+        <h3>✅ Next Step:</h3>
+        <p>If the tests above work, open <strong>index.html</strong> the same way!</p>
+    </div>
+
+    <script>
+        function testCanvas() {
+            const canvas = document.getElementById('testCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Draw a simple test
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(10, 10, 180, 80);
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText('Canvas Works!', 50, 55);
+            
+            document.getElementById('result').innerHTML = '<p style="color: green;">✅ Canvas API works!</p>';
+        }
+        
+        function testFileAPI() {
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                document.getElementById('result').innerHTML = '<p style="color: green;">✅ File API works! You can upload photos!</p>';
+            } else {
+                document.getElementById('result').innerHTML = '<p style="color: red;">❌ File API not supported in this browser</p>';
+            }
+        }
+        
+        // Auto-run tests
+        window.onload = function() {
+            testCanvas();
+            testFileAPI();
+        }
+    </script>
+</body>
+</html>
